@@ -6,7 +6,7 @@
 /*   By: aniezgod <aniezgod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/02 18:12:05 by aniezgod          #+#    #+#             */
-/*   Updated: 2022/08/22 21:56:36 by aniezgod         ###   ########.fr       */
+/*   Updated: 2023/01/20 16:40:02 by aniezgod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int				ft_isalpha(int c);
 int				ft_isprint(int c);
 int				ft_isascii(int c);
 int				ft_isdigit(int c);
-int				ft_strlen(const char *str);
+size_t				ft_strlen(const char *str);
 int				ft_strncmp(const char *s1, const char *s2, unsigned int n);
 int				ft_toupper(int c);
 int				ft_tolower(int c);

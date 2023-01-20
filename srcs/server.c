@@ -6,41 +6,70 @@
 /*   By: aniezgod <aniezgod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 14:04:45 by aniezgod          #+#    #+#             */
-/*   Updated: 2022/09/26 11:20:23 by aniezgod         ###   ########.fr       */
+/*   Updated: 2023/01/20 16:41:27 by aniezgod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	handle_message(int s)
+void    stock_message(char c, int client_pid)
 {
-	static int	bits = 8;
-	static char	buffer[BUFF_SIZE];
-	static int	i = 0;
+    static char *str = NULL;
+    char    *dst;
+    int     i;
 
-	if (s == SIGUSR1)
-		buffer[i] |= (1 << --bits);
-	else if (s == SIGUSR2)
-		buffer[i] &= ~(1 << --bits);
-	if (bits == 0)
-	{
-		bits = 8;
-		if (buffer[i] == '\0')
-		{
-			write(1, &buffer, i);
-			ft_memset(buffer, 0, BUFF_SIZE);
-		}
-		else
-			i++;
-	}
+    i = 0;
+    dst = malloc(sizeof(char) * (ft_strlen(str) + 2));
+    if (!dst)
+        return ;
+    if (str)
+    {
+		i = -1;
+        while (str[++i])
+            dst[i] = str[i];
+        free(str);
+    }
+    dst[i] = c;
+    dst[++i] = 0;
+    str = ft_strdup(dst);
+    if (!c)
+    {
+    	ft_printf("%s\n", str);
+		str = NULL;
+        kill(client_pid, SIGUSR1);
+    }
 }
 
-int	main(void)
-{	
+void    get_message(int sig, siginfo_t *info, void *context)
+{
+    static unsigned char c = 0;
+    static unsigned char bit = 128;
+
+    (void)context;
+    if (sig == SIGUSR1)
+		c |= bit; //1
+    if (bit == 1)
+    {
+        stock_message(c, info->si_pid);
+        c = 0;
+        bit = 128;
+    }
+    else
+        bit /= 2;
+    kill(info->si_pid, SIGUSR2);
+}
+
+
+int main (void)
+{
+    struct sigaction sa;
+
+    sa.sa_sigaction = get_message;
+    sa.sa_flags = SA_SIGINFO;
+    sigemptyset( &sa.sa_mask );
 	ft_printf("%d\n", getpid());
-	signal(SIGUSR1, handle_message);
-	signal(SIGUSR2, handle_message);
-	while (1)
-		pause();
-	return (0);
+    sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
+    while (1)
+        pause();
 }

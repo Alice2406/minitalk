@@ -6,23 +6,23 @@
 /*   By: aniezgod <aniezgod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 14:03:44 by aniezgod          #+#    #+#             */
-/*   Updated: 2023/01/20 16:41:49 by aniezgod         ###   ########.fr       */
+/*   Updated: 2023/01/21 12:38:15 by aniezgod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-t_data data;
+t_data	g_data;
 
 void	receive_bit_message(int sig)
 {
-	if (sig ==  SIGUSR1)
+	if (sig == SIGUSR1)
 	{
 		ft_printf("message received\n");
-        exit(0);
+		exit (0);
 	}
 	else if (sig == SIGUSR2)
-	    data.received_bit = 1;
+		g_data.received_bit = 1;
 }
 
 void	send_char(int pid, char c)
@@ -32,13 +32,13 @@ void	send_char(int pid, char c)
 	bit = 128;
 	while (bit >= 1)
 	{
-		if (c & bit) // 1
+		if (c & bit)
 			kill(pid, SIGUSR1);
-		else // 0
+		else
 			kill(pid, SIGUSR2);
 		bit /= 2;
 		sleep(1);
-		while(!data.received_bit)
+		while (!g_data.received_bit)
 			pause();
 	}
 }
@@ -55,7 +55,7 @@ void	send_str(int pid, char *str)
 
 int	main(int ac, char **av)
 {
-	data.received_bit = 0;
+	g_data.received_bit = 0;
 	signal(SIGUSR1, receive_bit_message);
 	signal(SIGUSR2, receive_bit_message);
 	if (ac == 3 && !(ft_atoi(av[1]) <= 0))

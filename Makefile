@@ -6,7 +6,7 @@
 #    By: aniezgod <aniezgod@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/08 16:25:39 by aniezgod          #+#    #+#              #
-#    Updated: 2022/09/18 18:56:18 by aniezgod         ###   ########.fr        #
+#    Updated: 2023/01/21 09:35:50 by aniezgod         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,7 @@ ${SERVER_NAME}: ${OBJ_SERVER}
 			@printf "${WHITE}${BOLD}╔════════════════════════════════════════════════════════════════════════════╗\n"
 			@printf "${BOLD}║                              .: COMPILATION :.                             ║\n"
 			@printf "${BOLD}╚════════════════════════════════════════════════════════════════════════════╝\n"
-			@${MAKE} -C ./libft
+			@${MAKE} -C ./libft >/dev/null
 			@printf "${BOLD}║                                    ${PURPLE}libft                                   ${WHITE}║\n"			
 			@${CC} -g ${CFLAGS} -o ${SERVER_NAME} ${OBJ_SERVER} libft/libft.a ${INCS}
 			@printf "${BOLD}║                                    ${PURPLE}server                                  ${WHITE}║\n"
@@ -63,12 +63,12 @@ ${CLIENT_NAME}: ${OBJ_CLIENT}
 
 clean:
 			@${RM} ${OBJ_CLIENT} ${OBJ_SERVER}
-			@${MAKE} -C libft clean 
+			@${MAKE} -C libft clean >/dev/null
 			
 fclean: clean
 			@printf "${BOLD}Entreprise de nettoyage bonjour ?\n"
 			@${RM} ${CLIENT_NAME} ${SERVER_NAME}
-			@${MAKE} -C libft fclean
+			@${MAKE} -C libft fclean >/dev/null
 			@printf "${BOLD}${GREEN}Tout est propre !✨\n"
 
 re: fclean all

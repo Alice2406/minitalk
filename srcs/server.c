@@ -6,52 +6,58 @@
 /*   By: aniezgod <aniezgod@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 14:04:45 by aniezgod          #+#    #+#             */
-/*   Updated: 2023/01/21 12:34:18 by aniezgod         ###   ########.fr       */
+/*   Updated: 2023/01/21 14:03:50 by aniezgod         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	stock_message(char c, int client_pid)
+static unsigned char	*stock_message(unsigned char *str, unsigned char c)
 {
-	static char	*str = NULL;
-	char		*dst;
-	int			i;
+	unsigned char	*tmp;
+	int				i;
+	static int		len = 1;
 
+	tmp = NULL;
 	i = 0;
-	dst = malloc(sizeof(char) * (ft_strlen(str) + 2));
-	if (!dst)
-		return ;
-	if (str)
+	tmp = malloc(++len);
+	if (!tmp)
+		return (NULL);
+	while (len > 2 && str[i])
 	{
-		i = -1;
-		while (str[++i])
-			dst[i] = str[i];
+		tmp[i] = str[i];
+		i++;
+	}
+	tmp[i] = c;
+	tmp[i + 1] = '\0';
+	if (len > 2)
 		free(str);
-	}
-	dst[i] = c;
-	dst[++i] = 0;
-	str = ft_strdup(dst);
-	free(dst);
-	if (!c)
-	{
-		ft_printf("%s\n", str);
-		str = NULL;
-		kill(client_pid, SIGUSR1);
-	}
+	if (c == '\0')
+		len = 1;
+	return (tmp);
+}
+
+void	print_str(unsigned char *str, int client_pid)
+{
+	ft_printf("%s\n", str);
+	free(str);
+	kill(client_pid, SIGUSR1);
 }
 
 void	get_message(int sig, siginfo_t *info, void *context)
 {
 	static unsigned char	c = 0;
 	static unsigned char	bit = 128;
+	static unsigned char	*str;
 
 	(void)context;
 	if (sig == SIGUSR1)
 		c |= bit;
 	if (bit == 1)
 	{
-		stock_message(c, info->si_pid);
+		str = stock_message(str, c);
+		if (c == 0)
+			print_str(str, info->si_pid);
 		c = 0;
 		bit = 128;
 	}
